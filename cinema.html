@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SG-Cinema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+            margin: 10px 0;
+        }
+        nav {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav a {
+            color: purple;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input[type="text"], input[type="number"], input[type="time"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: purple;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: darkviolet;
+        }
+        .error {
+            color: red;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .tab-content {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .tabs a {
+            cursor: pointer;
+            color: purple;
+            padding: 10px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .tabs a.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>SG-Cinema</h1>
+        <div class="tabs">
+            <a class="tab-link active" data-tab="filmes">Filmes</a>
+            <a class="tab-link" data-tab="salas">Salas</a>
+            <a class="tab-link" data-tab="sessoes">Sessões</a>
+            <a class="tab-link" data-tab="ingressos">Ingressos</a>
+        </div>
+    </nav>
+
+    <!-- Aba Filmes -->
+    <div id="filmes" class="tab-content active">
+        <h2>Registrar Filme</h2>
+        <form id="filmeForm">
+            <label for="filmeTitulo">Título:</label>
+            <input type="text" id="filmeTitulo" name="filmeTitulo" required>
+            
+            <label for="classificacao">Classificação:</label>
+            <select id="classificacao" name="classificacao">
+                <option value="livre">Livre</option>
+                <option value="10">10 anos</option>
+                <option value="12">12 anos</option>
+                <option value="14">14 anos</option>
+                <option value="16">16 anos</option>
+                <option value="18">18 anos</option>
+            </select>
+
+            <label for="genero">Gênero:</label>
+            <select id="genero" name="genero">
+                <option value="acao">Ação</option>
+                <option value="comedia">Comédia</option>
+                <option value="drama">Drama</option>
+                <option value="terror">Terror</option>
+                <option value="romance">Romance</option>
+                <option value="aventura">Aventura</option>
+            </select>
+
+            <label for="resumo">Resumo:</label>
+            <textarea id="resumo" name="resumo" rows="4" required></textarea>
+            
+            <input type="submit" value="Registrar Filme">
+            <div class="error" id="filmeError"></div>
+        </form>
+    </div>
+
+    <!-- Aba Salas -->
+    <div id="salas" class="tab-content">
+        <h2>Registrar Sala</h2>
+        <form id="salaForm">
+            <label for="salaNome">Nome da Sala:</label>
+            <input type="text" id="salaNome" name="salaNome" required>
+            
+            <label for="salaCapacidade">Capacidade:</label>
+            <input type="number" id="salaCapacidade" name="salaCapacidade" required>
+            
+            <input type="submit" value="Registrar Sala">
+            <div class="error" id="salaError"></div>
+        </form>
+    </div>
+
+    <!-- Aba Sessões -->
+    <div id="sessoes" class="tab-content">
+        <h2>Criar Sessão</h2>
+        <form id="sessaoForm">
+            <label for="sessaoFilme">Filme:</label>
+            <select id="sessaoFilme" required></select>
+
+            <label for="sessaoSala">Sala:</label>
+            <select id="sessaoSala" required></select>
+
+            <label for="sessaoHorario">Horário:</label>
+            <input type="time" id="sessaoHorario" required>
+
+            <input type="submit" value="Criar Sessão">
+            <div class="error" id="sessaoError"></div>
+        </form>
+    </div>
+
+    <!-- Aba Ingressos -->
+    <div id="ingressos" class="tab-content">
+        <h2>Comprar Ingresso</h2>
+        <form id="ingressoForm">
+            <label for="sessaoIngresso">Sessão:</label>
+            <select id="sessaoIngresso" required></select>
+
+            <label for="quantidadeIngressos">Quantidade de Ingressos:</label>
+            <input type="number" id="quantidadeIngressos" min="1" required>
+
+            <input type="submit" value="Comprar Ingresso">
+            <div class="error" id="ingressoError"></div>
+        </form>
+    </div>
+
+    <script>
+        const filmes = [];
+        const salas = [];
+        const sessoes = [];
+    
+        // Registro de filme
+        document.getElementById('filmeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const titulo = document.getElementById('filmeTitulo').value;
+            const classificacao = document.getElementById('classificacao').value;
+            const genero = document.getElementById('genero').value;
+            const resumo = document.getElementById('resumo').value;
+    
+            const filmeExistente = filmes.find(f => f.titulo === titulo);
+            if (filmeExistente) {
+                document.getElementById('filmeError').innerText = 'Filme já registrado.';
+                return;
+            }
+    
+            filmes.push({ titulo, classificacao, genero, resumo });
+            document.getElementById('filmeError').innerText = 'Filme registrado com sucesso!';
+            this.reset();
+            
+            // Atualizar lista de filmes em Criar Sessão
+            atualizarFilmes();
+        });
+    
+        // Registro de sala
+        document.getElementById('salaForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const nome = document.getElementById('salaNome').value;
+            const capacidade = parseInt(document.getElementById('salaCapacidade').value);
+    
+            const salaExistente = salas.find(s => s.nome === nome);
+            if (salaExistente) {
+                document.getElementById('salaError').innerText = 'Sala já registrada.';
+                return;
+            }
+    
+            salas.push({ nome, capacidade });
+            document.getElementById('salaError').innerText = 'Sala registrada com sucesso!';
+            this.reset();
+            
+            // Atualizar lista de salas em Criar Sessão
+            atualizarSalas();
+        });
+    
+        // Criação de sessão
+        document.getElementById('sessaoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const filmeIndex = parseInt(document.getElementById('sessaoFilme').value);
+            const salaIndex = parseInt(document.getElementById('sessaoSala').value);
+            const horario = document.getElementById('sessaoHorario').value;
+    
+            const sessaoConflito = sessoes.find(s => s.sala === salaIndex && s.horario === horario);
+            if (sessaoConflito) {
+                document.getElementById('sessaoError').innerText = 'Já existe uma sessão nesse horário nesta sala.';
+                return;
+            }
+    
+            const capacidade = salas[salaIndex].capacidade;
+            sessoes.push({ filme: filmeIndex, sala: salaIndex, horario, capacidade, ingressosVendidos: 0 });
+            document.getElementById('sessaoError').innerText = 'Sessão criada com sucesso!';
+            this.reset();
+            atualizarSessoes();
+        });
+    
+        // Compra de ingressos
+        document.getElementById('ingressoForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const sessaoIndex = parseInt(document.getElementById('sessaoIngresso').value);
+            const quantidade = parseInt(document.getElementById('quantidadeIngressos').value);
+            const sessao = sessoes[sessaoIndex];
+    
+            if (sessao.ingressosVendidos + quantidade > sessao.capacidade) {
+                document.getElementById('ingressoError').innerText = 'Quantidade de ingressos excede a capacidade da sala.';
+                return;
+            }
+    
+            sessao.ingressosVendidos += quantidade;
+            document.getElementById('ingressoError').innerText = 'Ingressos comprados com sucesso!';
+            this.reset();
+            
+            // Atualizar lista de sessões após compra de ingressos
+            atualizarSessoes();
+        });
+    
+        // Atualizar lista de filmes
+        function atualizarFilmes() {
+            const filmeSelect = document.getElementById('sessaoFilme');
+            filmeSelect.innerHTML = '<option value="">Selecione um filme</option>';
+            filmes.forEach((filme, index) => {
+                filmeSelect.innerHTML += `<option value="${index}">${filme.titulo}</option>`;
+            });
+        }
+    
+        // Atualizar lista de salas
+        function atualizarSalas() {
+            const salaSelect = document.getElementById('sessaoSala');
+            salaSelect.innerHTML = '<option value="">Selecione uma sala</option>';
+            salas.forEach((sala, index) => {
+                salaSelect.innerHTML += `<option value="${index}">${sala.nome} (Capacidade: ${sala.capacidade})</option>`;
+            });
+        }
+    
+        // Atualizar lista de sessões
+        function atualizarSessoes() {
+            const sessaoSelect = document.getElementById('sessaoIngresso');
+            sessaoSelect.innerHTML = '<option value="">Selecione uma sessão</option>';
+            sessoes.forEach((sessao, index) => {
+                const filme = filmes[sessao.filme];
+                const sala = salas[sessao.sala];
+                sessaoSelect.innerHTML += `<option value="${index}">${filme.titulo} - Sala: ${sala.nome} - Horário: ${sessao.horario} - Ingressos Vendidos: ${sessao.ingressosVendidos}/${sessao.capacidade}</option>`;
+            });
+        }
+    
+        // Alternar entre abas
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+    
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+    
+                // Remove a classe 'active' de todas as abas e conteúdos
+                tabLinks.forEach(link => link.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+    
+                // Adiciona a classe 'active' à aba e ao conteúdo selecionado
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+    
+                // Se a aba de "Sessões" ou "Ingressos" for ativada, atualizar as listas
+                if (tabId === 'sessoes') {
+                    atualizarFilmes();
+                    atualizarSalas();
+                }
+                if (tabId === 'ingressos') {
+                    atualizarSessoes(); // Atualizar a lista de sessões ao abrir a aba Ingressos
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
